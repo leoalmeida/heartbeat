@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Heartbeat</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+	<button (click)="subscribe()">SUBSCRIBE TO FOOBAR TOPIC</button>
+	<button (click)="sendMsg()">SEND FOOBAR MESSAGE</button>
+	<button (click)="unsubscribe()">UNSUBSCRIBE FROM FOOBAR TOPIC</button>
+
+	<div>
+		<div>
+			<h1>Messages:</h1>
+			<p *ngFor="let message of messages">
+				{{message | json}}
+			</p>
+		</div>
+		<div>
+			<h1>Status info:</h1>
+			<p *ngFor="let statusMessage of status">
+				{{statusMessage}}
+			</p>
+		</div>
+	</div>
+	<canvas #heartbeatcanvas></canvas>
+</ion-content>
