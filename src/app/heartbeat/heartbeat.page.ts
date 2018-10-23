@@ -1,6 +1,8 @@
 import { Component, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import {ConnectionStatus, MqttService, SubscriptionGrant} from 'ngx-mqtt-client';
-import {IClientOptions} from 'mqtt';
+import {MqttService} from '../services/mqtt.service';
+import {SubscriptionGrant} from '../models/subscription-grant';
+import {ConnectionStatus} from '../models/connection-status';
+import {IClientOptions, MqttClient} from 'mqtt';
 
 export interface MqttMessage {
 	from: string;
@@ -34,27 +36,17 @@ export class HeartbeatPage implements  AfterViewInit, OnDestroy  {
 	ball: any = {};
 	point: any = {};
 	current_point: number = 0;
-
-	  points:any = [
-			{y:0,x:20},
-			{y:0,x:1},
-			  {y:3,x:1},
-			{y:-10,x:2},
-			{y:10,x:2},
-			{y:-12,x:3},
-			{y:35,x:5},
-			{y:-25,x:4},
-			{y:14,x:3},
-			{y:5,x:2},
-			{y:0,x:1},
-			{y:0,x:20}
-		];
+	
+	points:any = [];
 
     constructor(private _mqttService: MqttService) {
 		this._mqttService.status().subscribe((s: ConnectionStatus) => {
             const status = s === ConnectionStatus.CONNECTED ? 'CONNECTED' : 'DISCONNECTED';
             this.status.push(`Mqtt client connection status: ${status}`);
         });
+		this.subscribe();
+		this.sendMsg();
+		this.points.push({y:0,x:10})
     }
 	
 	connect(config: IClientOptions): void {
@@ -68,7 +60,9 @@ export class HeartbeatPage implements  AfterViewInit, OnDestroy  {
                     if (msg instanceof SubscriptionGrant) {
                         this.status.push('Subscribed to esp/000001/RAW topic!');
                     } else {
+
                         this.messages.push(msg);
+						this.points.push({y:Number(msg.body.data),x:10})
                     }
                 },
                 error: (error: Error) => {
